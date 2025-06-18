@@ -17,6 +17,15 @@ spring:
         show_sql: true #true는 한칸 띄워서 써야하고,
         format_sql: true #table이 보기좋게 보여짐
 
+  #Live Reload 기능 활성화 => 직접 브라우저의 새로고침없이 변경된 리소스 웹 브라우저에 반영됨
+  devtools:
+    livereload:
+      enabled: true
+
+  #Thymeleaf cache 사용중지(운영환경에서 캐싱 on, 개발환경에서 캐싱 off)
+  thymeleaf:
+    cache: false
+
 #쿼리에 물음표로 출력되는 바인드 파라미터 출력
 logging:
   level:
