@@ -1,0 +1,21 @@
+{{>layouts/header}}
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Id</th>
+        <th scope="col">Email</th>
+        <th scope="col">Password</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#member}}  {{!-controller에서 넘겨준 member라는 이름의 리스트를 하나씩 꺼내면서 반복 출력하라는 뜻-}}
+        <tr>
+            <th>{{id}}</th>
+            <th>{{email}}</th>
+            <th>{{member}}</th>
+        </tr>
+    {{/member}}
+    </tbody>
+</table>
+<a href="/members">회원가입</a>
+{{>layouts/footer}}
