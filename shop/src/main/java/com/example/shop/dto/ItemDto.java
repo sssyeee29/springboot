@@ -7,8 +7,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@AllArgsConstructor //모든 속성에 대한 생성자 생성
+@NoArgsConstructor // 파라미터가 없는 기본 생성자 생성
 public class ItemDto {
 
     private Long id;

@@ -21,6 +21,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> { //crud랑 �
     List<Item> findByItemDetail(@Param("itemDetail") String itemDetail);
 
     //nativeQuery => DB에 있는 table 이용 (item_detail 이 이름이 잘못된건 실행할때 오류가 나서 그때 잘못된걸 알 수 있음)
+                    //100% sql 구문
     @Query(value = "select * from item where item_detail " +
             "like %:itemDetail% order by price desc", nativeQuery = true)
     List<Item> findByItemDetailByNative(@Param("itemDetail") String itemDetail);
