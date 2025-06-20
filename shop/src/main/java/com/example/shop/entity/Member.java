@@ -43,7 +43,7 @@ public class Member {
                 .email(memberFormDto.getEmail())
                 .password(passwordEncoder.encode(memberFormDto.getPassword())) //encode를 사용해 password 암호화
                 .address(memberFormDto.getAddress())
-                .role(Role.USER) //권한정보 임시로 넣은거
+                .role(Role.ADMIN) //권한정보 임시로 넣은거
                 .build();
     }
 
