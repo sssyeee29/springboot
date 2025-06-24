@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Member {
+public class Member extends BaseEntity { //4개의 정보가 자동으로 들어감
 
     //form화면에서 controller 통해서 MemberFormDto로 받아서 serive 통해서 repository통해서(?) 엔티티로 변환후 DB에 저장되는거
     @Id

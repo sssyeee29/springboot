@@ -51,6 +51,9 @@ dependencies {
     //회원가입 페이지에서 서버로 넘어오는 값을 검증하기 위함 (유효성검사)
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation
     implementation("org.springframework.boot:spring-boot-starter-validation:3.5.0")
+
+    //DTO <-> Entity 변환
+    implementation("org.modelmapper:modelmapper:3.2.4")
 }
 
 tasks.named('test') {
