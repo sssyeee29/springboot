@@ -17,6 +17,7 @@ public class Item extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "item_id")
     private Long id; // 상품코드
 
     @Column(nullable = false, length = 50) // null허용X, 상품명 50자까지 가능
