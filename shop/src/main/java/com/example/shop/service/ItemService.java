@@ -25,7 +25,7 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
     private final ItemImgRepository itemImgRepository;
-    private final ItemImgService itemImgService; //
+    private final ItemImgService itemImgService;
 
     //                  등록화면에서 입력받은 값       등록화면에 등록한 이미지
     public Long saveItem(ItemFormDto itemFormDto, List<MultipartFile> itemImgFileList) throws Exception {
@@ -40,6 +40,7 @@ public class ItemService {
 
             itemImg.setItem(item);
 
+            // 첫번째 사진이 대표이미지, 나머지는 그냥..
             if(itemImgFileList.get(0).equals(multipartFile)) {
                 itemImg.setRepimgYn("Y"); // 메인페이지 보여줄 대표이미지
             }else{
@@ -74,7 +75,7 @@ public class ItemService {
 
         List<ItemImgDto> itemImgDtoList = new ArrayList<>();
 
-        // ItemImg를 ItemImgDto로 변환해서 List에 저장
+        // ItemImg(엔티티)를 ItemImgDto로 변환해서 List에 저장
         for (ItemImg itemImg : itemImgList) {
             ItemImgDto itemImgDto = ItemImgDto.of(itemImg);
 
@@ -90,4 +91,29 @@ public class ItemService {
 
         return itemFormDto;
     }
+
+    public Long updateItem(ItemFormDto itemFormDto, List<MultipartFile> itemImgFileList) throws Exception {
+
+        //상품 수정
+        Item item = itemRepository.findById(itemFormDto.getId())
+                .orElseThrow(()-> new EntityNotFoundException());
+
+        //상품데이터 수정
+        item.updateItem(itemFormDto);
+
+        //상품이미지 수정
+        List<Long> itemImgIds = itemFormDto.getItemImgIds(); //상품 이미지 아이디 리스트를 조회함
+
+        log.info("itemImgIds : {}", itemImgIds);
+
+        //이미지 등록 : 기존 파일 삭제 -> 새 파일 저장 -> DB 정보 갱신 과정
+        for (int i=0; i<itemImgIds.size(); i++) { //상품이미지 id 리스트의 크기만큼 반복
+            itemImgService.updateItemImg(itemImgIds.get(i), itemImgFileList.get(i));
+        }
+
+        return item.getId();
+
+    }
+
+
 }

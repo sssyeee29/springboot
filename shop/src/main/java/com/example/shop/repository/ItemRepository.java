@@ -3,12 +3,14 @@ package com.example.shop.repository;
 import com.example.shop.entity.Item;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 //클래스이름, 기본키의자료형
-public interface ItemRepository extends JpaRepository<Item, Long> { //crud랑 페이징처리까지 다 쓸수있음
+public interface ItemRepository extends JpaRepository<Item, Long>, //crud랑 페이징처리까지 다 쓸수있음
+        QuerydslPredicateExecutor<Item> {
 
     List<Item> findByItemNm(String itemNm);  //엔티티에 있는거랑 같아야함
 

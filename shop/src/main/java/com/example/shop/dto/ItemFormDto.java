@@ -34,10 +34,13 @@ public class ItemFormDto {
 
     private ItemSellStatus itemSellStatus;
 
-    //상품 저장 후 수정할 때 상품 이미지 정보를 저장하는 리스트
+    //상품 저장 후 수정할 때 상품 이미지 정보를 저장하는 리스트(상품 이미지를 리스트로 저장)
     private List<ItemImgDto> itemImgDtoList = new ArrayList<>();
 
     //상품의 이미지 아이디를 저장하는 리스트
+    /* ItemImg entity에 item_img_id값을 리스트로 가지고 있음
+       이미지 수정시 특정 상품에서 전체 이미지를 수정하지 않고,
+       개별 이미지를 수정하기 위한 용도로 item_img_id를 사용하기 위함*/
     private List<Long> itemImgIds = new ArrayList<>();
 
 

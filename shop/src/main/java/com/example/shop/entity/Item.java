@@ -1,6 +1,7 @@
 package com.example.shop.entity;
 
 import com.example.shop.constant.ItemSellStatus;
+import com.example.shop.dto.ItemFormDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,4 +36,14 @@ public class Item extends BaseEntity {
 
     @Enumerated(EnumType.STRING) //enum타입 클래스랑 연결(STRING 필수!)
     private ItemSellStatus itemSellStatus; // 상품 판매상태
+
+    //상품 업데이트 로직
+    //엔티티 안에 넣는건 선호하지는 않음! 차라리 엔티티에 넣어서 하는게 더 나음
+    public void updateItem(ItemFormDto itemFormDto) {
+        this.itemNm = itemFormDto.getItemNm();
+        this.price = itemFormDto.getPrice();
+        this.stockNumber = itemFormDto.getStockNumber();
+        this.itemDetail = itemFormDto.getItemDetail();
+        this.itemSellStatus = itemFormDto.getItemSellStatus();
+    }
 }
