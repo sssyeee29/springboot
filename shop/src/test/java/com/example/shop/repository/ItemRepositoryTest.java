@@ -1,12 +1,20 @@
 package com.example.shop.repository;
 
 import com.example.shop.constant.ItemSellStatus;
+import com.example.shop.dto.ItemSearchDto;
 import com.example.shop.entity.Item;
+import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
+//test에서 then 단계에서 필요한 import
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -104,6 +112,35 @@ class ItemRepositoryTest {
 
         List<Item> itemList = itemRepository.findByItemDetailByNative("설명1"); //10005보다 작은거 조회해라
         itemList.forEach(item -> log.info("item : {}", item.toString()));
+
+    }
+
+    @Autowired
+    private EntityManager em;
+
+    //
+    @Test
+    public void getGetAdminItemPage(){
+
+        //Given(준비) - 테스트를 위한 초기 상태 설정
+        ItemSearchDto searchDto = new ItemSearchDto();
+        searchDto.setSearchDateType("1w"); //전체 날짜
+        //    searchDto.setItemSellStatus(ItemSellStatus.SOLD_OUT); //품절 상품
+        searchDto.setSearchSellStatus(ItemSellStatus.SELL); //판매중인 상품
+        //    searchDto.setSearchBy("itemNm");
+        //    searchDto.setSearchQuery("옥수수깡");
+
+        PageRequest pageRequest = PageRequest.of(0, 5);
+
+        //When(실행) - 태스트할 동작 실행
+        Page<Item> result = itemRepository.getAdminItemPage(searchDto, pageRequest);
+
+        //Then(검증) - 실행 결과 검증
+        assertThat(result.getTotalElements()).isEqualTo(8); //판매중인(sell) 상품 조회할때 내 db에 해당되는게 몇개있는지 써서 적어줘야함
+        assertThat(result.getContent().size()).isEqualTo(5); //5개씩 조회
+        //    assertThat(result.getContent().get(0).getItemNm()).contains("자바");
+
+        result.getContent().forEach(item -> log.info("item : {}", item.toString()));
 
     }
 }

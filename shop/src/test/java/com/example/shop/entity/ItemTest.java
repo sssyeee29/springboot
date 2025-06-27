@@ -34,6 +34,7 @@ class ItemTest {
         queryFactory = new JPAQueryFactory(em);
     }
 
+
     //itemNm 조회
     @Test
     public void testFindByItemNm(){
@@ -115,6 +116,8 @@ class ItemTest {
         if(minPrice != null){
             builder.and(qItem.price.gt(minPrice));
         }
+
+        log.info("builder : {} ", builder.toString());
 
         List<Item> items = queryFactory
                 .selectFrom(qItem)
