@@ -105,7 +105,7 @@ class OrderTest {
     }
 
     @Test
-    public void cacadeTest(){
+    public void cascadeTest(){
         Order order = new Order();
 
         for(int i=0; i<3; i++){
