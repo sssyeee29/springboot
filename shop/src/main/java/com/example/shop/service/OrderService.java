@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,5 +94,31 @@ public class OrderService {
         //주문 이력 DTO 리스트, 페이징 정보, 총 주문 수를 기반으로 Page 객체 생성 후 반환
         return new PageImpl<OrderHistDto>(orderItemDtoList , pageable, totalCount);
 
+    }
+
+    /*
+    주문취소
+     */
+    //email(로그인한 사용자), orderId(주문번호)
+    public boolean validateOrder(Long orderId, String email) {
+        Member curMember = memberRepository.findByEmail(email);
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(()-> new EntityNotFoundException());
+        //email로 로그인한 회원과 주문한 사용자가 같은지 확인
+        Member savedMember = order.getMember();
+
+        if(!StringUtils.equals(curMember.getEmail(), savedMember.getEmail())){
+            return false;
+        }
+        return true;
+    }
+
+    // 주문 취소
+    public void cancelOrder(Long orderId){
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException());
+
+        order.cancelOrder(); //주문 취소 상태로 변경하면 변경 감지 기능에 의해 트랜잭션이 끝날 때 update 쿼리가 실행
     }
 }
