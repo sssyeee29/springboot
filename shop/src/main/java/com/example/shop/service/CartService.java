@@ -2,6 +2,8 @@ package com.example.shop.service;
 
 import com.example.shop.dto.CartDetailDto;
 import com.example.shop.dto.CartItemDto;
+import com.example.shop.dto.CartOrderDto;
+import com.example.shop.dto.OrderDto;
 import com.example.shop.entity.Cart;
 import com.example.shop.entity.CartItem;
 import com.example.shop.entity.Item;
@@ -15,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.util.StringUtils;
 
 import javax.smartcardio.CardTerminal;
 import java.util.ArrayList;
@@ -30,6 +33,7 @@ public class CartService {
     private final MemberRepository memberRepository;
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
+    private final OrderService orderService;
 
     //징비구니에 상품을담는 로직 작성
     public Long addCart(CartItemDto cartItemDto, String email) {
@@ -84,6 +88,76 @@ public class CartService {
 
         return cartDetailDtoList;
 
+    } //end getCartList
+
+    //장바구니 상품의 수량을 업데이트 하는 로직
+    @Transactional(readOnly = true)
+    public boolean validateCartItem(Long cartItemId, String email){
+        // 현재 로그인한 회원을 조회
+        Member curMember = memberRepository.findByEmail(email);
+
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new EntityNotFoundException());
+
+        //장바구니 상품을 저장한 회원을 조회
+        Member savedMember = cartItem.getCart().getMember();
+
+        //현재 로그인한 회원과  장바구니 상품을 저장한 회원이 다를 경우 false, 같으면 true
+        if(!StringUtils.equals(curMember.getEmail(), savedMember.getEmail())){
+            return false;
+        }
+        return true;
     }
+
+    // 장바구니 상품의 수량을 업데이트 하는 메소드
+    public void updateCartItem(Long cartItemId, int count){
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new EntityNotFoundException());
+
+        // 스냅샷하고 비교해서 값이 변경감지(더티채킹)되기 때문에
+        // update 구문을 실행
+        cartItem.updateCount(count);
+    }
+
+    // 상품정보에 있는 x 버튼을 클릭할 때 장바구니에 담긴 상품 삭제 로직
+    public void deleteCartItem(Long cartItemId){
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new EntityNotFoundException());
+        cartItemRepository.delete(cartItem);
+    }
+
+    public Long orderCartItem(List<CartOrderDto> cartOrderDtoList, String email){
+
+        List<OrderDto> orderDtoList = new ArrayList<>();
+        
+        //장바구니 페이지에서 전달받은 주문 상품 번호를 이용하여 주문 로직을 전달할 orderDto객체생성
+        for(CartOrderDto cartOrderDto : cartOrderDtoList){
+            log.info("cartOrderDto : {}", cartOrderDto);
+            
+            CartItem cartItem = cartItemRepository.findById(cartOrderDto.getCartItemId())
+                    .orElseThrow(() -> new EntityNotFoundException());
+            
+            OrderDto orderDto = new OrderDto();
+            orderDto.setItemId(cartItem.getItem().getId());
+            orderDto.setCount(cartItem.getCount());
+            orderDtoList.add(orderDto);
+        }
+
+        //장바구니에 담은 상품을 주문하도록 주문 로직을 호출함
+        //[{itemId : 1, count :2},{itemId : 2, count : 5}] => OrderService의 orders가 받아줌
+        Long orderId = orderService.orders(orderDtoList, email);
+
+        //주문이 완료되었으므로 장바구니 비우기
+        for(CartOrderDto cartOrderDto : cartOrderDtoList){
+            CartItem cartItem = cartItemRepository
+                    .findById(cartOrderDto.getCartItemId())
+                    .orElseThrow(() -> new EntityNotFoundException());
+            cartItemRepository.delete(cartItem);
+        }
+        return orderId;
+    }
+
+
+
 
 }
